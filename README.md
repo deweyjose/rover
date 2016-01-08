@@ -42,4 +42,6 @@ https://www.servocity.com/html/hub_spacers.html#.Vo8TrZMrJp8
 
 Code:
 
-This project uses the WiringPi GPIO interface library for the Raspberry Pi. Instructions on how to download and install the library on the RPi can be found here http://wiringpi.com/download-and-install/.
+This project uses the WiringPi GPIO interface library for the Raspberry Pi. Instructions on how to download and install the library on the RPi can be found here http://wiringpi.com/download-and-install/.<br>
+
+I found it pretty painful coding on the RPi itself. Currently I'm using a remote development setup using Netbeans. This tutorial is helpful https://netbeans.org/kb/docs/cnd/remotedev-tutorial.html.
