@@ -15,6 +15,14 @@ https://www.pololu.com/product/2399
 Whippersnapper Runt Rover Kit <br>
 https://www.servocity.com/html/whippersnapper_runt_rovertm__6.html#.Vo8R_pMrJp8
 
+RAVPower Portable Charger 6700mAh External Battery Pack (2.4A Output, 2A Input, iSmart Technology) - Blue <br>
+
+Griffin Technology GC17097 USB Mini-Cable Kit<br>
+
+4AA Amazon Basic rechargable batteries<br> 
+
+EBL 8 Bay AA, AAA, Ni-MH, Ni-Cd Rechargeable Battery Charger<br>
+
 4 Cell Flat Battery Tray<br>
 4 Cell Flat Battery Tray ABS Mount for Runt Rovers<br>
 https://www.servocity.com/html/4_cell_battery_trays.html#.Vo8SIJMrJp8
