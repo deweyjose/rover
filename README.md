@@ -1,7 +1,7 @@
 # a rover
 A simple project to see if I could get a rover to autonoumously rover about the kitchen without bumping into anything (much)...
 
-Parts:
+<b>Parts</b>
 
 Raspberry Pi Model B<br>
 https://www.raspberrypi.org/products/model-b/
@@ -37,10 +37,10 @@ https://www.servocity.com/html/6-32_socket_head_machine_screw.html
 https://www.servocity.com/html/6-32_nylock_nuts_pack__632142_.html
 
 8 Aluminum Hub Spacer (1/8 in. thick)<br>
-https://www.servocity.com/html/hub_spacers.html#.Vo8TrZMrJp8
+https://www.servocity.com/html/hub_spacers.html#.Vo8TrZMrJp8<br>
 
 
-Code:
+<b>Code</b>:
 
 This project uses the WiringPi GPIO interface library for the Raspberry Pi. Instructions on how to download and install the library on the RPi can be found here http://wiringpi.com/download-and-install/.<br>
 
