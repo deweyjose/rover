@@ -6,6 +6,9 @@ Parts:
 Raspberry Pi Model B<br>
 https://www.raspberrypi.org/products/model-b/
 
+Ultrasonic Range Finder
+(came with a sensorkit from sunfounder)
+
 RoboClaw 2/7A Motor Controller <br>
 https://www.pololu.com/product/2399
 
