@@ -30,3 +30,8 @@ https://www.servocity.com/html/6-32_nylock_nuts_pack__632142_.html
 
 8 Aluminum Hub Spacer (1/8 in. thick)<br>
 https://www.servocity.com/html/hub_spacers.html#.Vo8TrZMrJp8
+
+
+Code:
+
+This project uses the WiringPi GPIO interface library for the Raspberry Pi. Instructions on how to download and install the library on the RPi can be found here http://wiringpi.com/download-and-install/.
