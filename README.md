@@ -44,4 +44,12 @@ https://www.servocity.com/html/hub_spacers.html#.Vo8TrZMrJp8<br>
 
 This project uses the WiringPi GPIO interface library for the Raspberry Pi. Instructions on how to download and install the library on the RPi can be found here http://wiringpi.com/download-and-install/.<br>
 
-I found it pretty painful coding on the RPi itself. Currently I'm using a remote development setup using Netbeans. This tutorial is helpful https://netbeans.org/kb/docs/cnd/remotedev-tutorial.html.
+I found it pretty painful coding on the RPi itself. Currently I'm using a remote development setup using Netbeans. This tutorial is helpful https://netbeans.org/kb/docs/cnd/remotedev-tutorial.html.<br>
+
+<b>Useful Links</b>:
+
+Make SSH access not terrible on the RPi<br>
+https://www.andreagrandi.it/2014/09/02/how-to-configure-edimax-ew-7811un-wifi-dongle-on-raspbian/<br>
+
+Reconfigure UART for use with motor controller<br>
+https://sites.google.com/site/semilleroadt/raspberry-pi-tutorials/gpio<br>
