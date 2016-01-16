@@ -46,6 +46,12 @@ This project uses the WiringPi GPIO interface library for the Raspberry Pi. Inst
 
 I found it pretty painful coding on the RPi itself. Currently I'm using a remote development setup using Netbeans. This tutorial is helpful https://netbeans.org/kb/docs/cnd/remotedev-tutorial.html.<br>
 
+After having quite a bit of difficulty with wiringPi I fell back to Python and the libraries published by Ion Motion themselves.<br>
+The most convenient IDE I've found so far is Komodo. It's remote debugging setup has been the most straight forward. It's a commercial product with a 21-day fully featured license. We'll see if I pay up...<br>
+
+You need to run this on the RPi:<br>
+pip install komodo-python-dbgp
+
 <b>Useful Links</b>:
 
 Make SSH access not terrible on the RPi<br>
