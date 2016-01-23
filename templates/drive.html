@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+<script>
+    document.ontouchmove = function(e){ 
+        e.preventDefault(); 
+    };
+</script>
+<head>
+    <link rel="stylesheet" href='/static/style.css' type="text/css">
+    <title>Drive!</title>
+</head>
+
+<body>
+    <h1>Drive Me!</h1>
+    <table border=1 class="control">
+        <tr><td></td><td><a href=# id=forward>FORWARD</a></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td><a href=# id=left>LEFT</a></td><td><a href=# id=stop>STOP</a></td><td><a href=# id=right>RIGHT</a></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td><a href=# id=reverse>REVERSE</a></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td><a href=# id=spin>SPIN</a></td><td></td></tr> 
+    </table>
+    <span id=result style="font-size:xx-small;">stopped</span>
+
+    <script type="text/javascript">
+
+    $(function() {
+
+    function create_api_click(api_name) {
+        $('a#'+api_name).bind('click', function() {
+            $.getJSON('/'+api_name, {}, function(data) {
+                $("#result").text(api_name+" "+JSON.stringify(data.result));
+            });
+            return false;
+        });
+    }
+
+    create_api_click('accelerate');
+    create_api_click('decelerate');
+    create_api_click('forward');
+    create_api_click('reverse');
+    create_api_click('stop');
+    create_api_click('right');
+    create_api_click('left');
+    create_api_click('spin');    
+
+    });
+    </script>
+</body>
+</html>

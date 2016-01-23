@@ -1,0 +1,25 @@
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  position: relative
+}
+
+body {
+    background: black;
+    color: white;
+}
+
+a {
+    color: white;
+}
+
+.control {
+    width: 315px;
+    height: 380px;
+    table-layout:fixed;
+}
+.control td {
+    text-align: center;    
+}
