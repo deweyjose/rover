@@ -3,8 +3,6 @@ import loggers
 
 LOGGER = loggers.get_logger(__file__, loggers.get_debug_level())
 
-motorctrl.startup()
-
 def print_info_dictionary():
     LOGGER.info("{0}".format(get_info_dictionary()))
     
@@ -18,7 +16,7 @@ def get_info_dictionary():
     temperature = motorctrl.get_temp()
     errors      = motorctrl.get_errors()
     config      = motorctrl.get_configuration()
-    speed       = motorctrl.get_speed()
+    speed       = motorctrl.get_speed_and_direction()
         
     info = [{'name':'version'          , 'value': version.version       },
             {'name':'main max voltage' , 'value': voltage.main_max      },

@@ -8,17 +8,18 @@ BAUD_RATE  = 115200
 LOGGER     = loggers.get_logger(__file__, loggers.get_debug_level())
 DIRFORWARD = "F"
 DIRREVERSE = "R"
-M1DIR      = DIRFORWARD
-M2DIR      = DIRFORWARD
-M1SPEED    = 0
-M2SPEED    = 0
+RIGHTDIR   = DIRFORWARD
+LEFTDIR    = DIRFORWARD
+RIGHTSPEED = 0
+LEFTSPEED  = 0
 
 ########################################################
 
 def startup():
     LOGGER.debug("startup")
-    LOGGER.debug("roboclaw.Open({0}, {1})".format(DEVICE, BAUD_RATE))
+    LOGGER.debug("roboclaw.Open({0}, {1})".format(DEVICE, BAUD_RATE))    
     roboclaw.Open(DEVICE, BAUD_RATE)
+    set_voltage_settings(voltage_settings(0))
     return True
 
 ########################################################
@@ -68,9 +69,9 @@ class speed_and_direction(object):
             
 
 def get_speed_and_direction():
-    global M1SPEED, M1DIR, M2SPEED, M2DIR
-    LOGGER.debug("speed_direction {0} {1} {2} {3}".format(M1SPEED, M1DIR, M2SPEED, M2DIR))
-    return speed_and_direction(M1SPEED, M1DIR, M2SPEED, M2DIR)
+    global RIGHTSPEED, RIGHTDIR, LEFTSPEED, LEFTDIR
+    LOGGER.debug("speed_direction {0} {1} {2} {3}".format(RIGHTSPEED, RIGHTDIR, LEFTSPEED, LEFTDIR))
+    return speed_and_direction(RIGHTSPEED, RIGHTDIR, LEFTSPEED, LEFTDIR)
 
 ########################################################
 # ERRORS
@@ -212,109 +213,113 @@ def get_temp():
 ########################################################
 
 def reverse_right(speed):
-    global M2SPEED, M1DIR
+    global RIGHTSPEED, RIGHTDIR
     
-    M1SPEED = speed
-    M1DIR   = DIRREVERSE
+    RIGHTSPEED = max(0, min(127, speed))
+    RIGHTDIR   = DIRREVERSE
     
-    LOGGER.debug("reverse_right({0})".format(M1SPEED))
+    LOGGER.debug("reverse_right({0})".format(RIGHTSPEED))
     
-    apival = roboclaw.BackwardM1(ADDRESS, M1SPEED)
+    apival = roboclaw.BackwardM1(ADDRESS, RIGHTSPEED)
     
-    LOGGER.debug("roboclaw.BackwardM1({0}, {1}) == {2}".format(ADDRESS, M1SPEED, apival))
+    LOGGER.debug("roboclaw.BackwardM1({0}, {1}) == {2}".format(ADDRESS, RIGHTSPEED, apival))
     
     return apival
     
 ########################################################
 
 def reverse_left(speed):
-    global M2SPEED, M2DIR
+    global LEFTSPEED, LEFTDIR
         
-    M2SPEED = speed
-    M2DIR   = DIRREVERSE
+    LEFTSPEED = max(0, min(127, speed))
+    LEFTDIR   = DIRREVERSE
     
-    LOGGER.debug("reverse_left({0})".format(M2SPEED))
+    LOGGER.debug("reverse_left({0})".format(LEFTSPEED))
 
-    apival = roboclaw.BackwardM2(ADDRESS, M2SPEED)
+    apival = roboclaw.BackwardM2(ADDRESS, LEFTSPEED)
     
-    LOGGER.debug("roboclaw.BackwardM2({0}, {1}) == {2}".format(ADDRESS, M2SPEED, apival))
+    LOGGER.debug("roboclaw.BackwardM2({0}, {1}) == {2}".format(ADDRESS, LEFTSPEED, apival))
     
     return apival
 
 ########################################################
 
 def forward_right(speed):
-    global M1SPEED, M1DIR
+    global RIGHTSPEED, RIGHTDIR
     
-    M1SPEED = speed
-    M1DIR   = DIRFORWARD
+    RIGHTSPEED = max(0, min(127, speed))
+    RIGHTDIR   = DIRFORWARD
     
-    LOGGER.debug("forward_right({0})".format(M1SPEED))
+    LOGGER.debug("forward_right({0})".format(RIGHTSPEED))
 
-    apival = roboclaw.ForwardM1(ADDRESS, M1SPEED)
+    apival = roboclaw.ForwardM1(ADDRESS, RIGHTSPEED)
     
-    LOGGER.debug("roboclaw.ForwardM1({0}, {1}) == {2}".format(ADDRESS, M1SPEED, apival))
+    LOGGER.debug("roboclaw.ForwardM1({0}, {1}) == {2}".format(ADDRESS, RIGHTSPEED, apival))
     
     return apival
 
 ########################################################
 
 def forward_left(speed):
-    global M2SPEED, M2DIR
+    global LEFTSPEED, LEFTDIR
     
-    M2SPEED = speed
-    M2DIR   = DIRFORWARD
+    LEFTSPEED = max(0, min(127, speed))
+    LEFTDIR   = DIRFORWARD
     
-    LOGGER.debug("forward_left({0})".format(M2SPEED))
+    LOGGER.debug("forward_left({0})".format(LEFTSPEED))
 
-    apival = roboclaw.ForwardM2(ADDRESS, M2SPEED)
+    apival = roboclaw.ForwardM2(ADDRESS, LEFTSPEED)
     
-    LOGGER.debug("roboclaw.ForwardM2({0}, {1}) {2}".format(ADDRESS, M2SPEED, apival))
+    LOGGER.debug("roboclaw.ForwardM2({0}, {1}) {2}".format(ADDRESS, LEFTSPEED, apival))
     
     return apival
 
 ########################################################
 
 def apply_speed_adjustment():
-    global M1SPEED, M2SPEED, M1DIR, M2DIR
+    global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     
-    if M1DIR == DIRFORWARD:
-        forward_right(M1SPEED)
+    if RIGHTDIR == DIRFORWARD:
+        forward_right(RIGHTSPEED)
     else:
-        reverse_right(M1SPEED)
+        reverse_right(RIGHTSPEED)
     
-    if M2DIR == DIRFORWARD:
-        forward_left(M2SPEED)
+    if LEFTDIR == DIRFORWARD:
+        forward_left(LEFTSPEED)
     else:
-        reverse_left(M2SPEED)
+        reverse_left(LEFTSPEED)
 
 ########################################################
 # DIRECTIONAL HELPERS
 ########################################################
 
 def is_spinning():
-    global M1DIR, M2DIR
-    return M1DIR != M2DIR
+    global RIGHTDIR, LEFTDIR
+    return RIGHTDIR != LEFTDIR
 
 def is_reverse():
-    global M1DIR, M2DIR, DIRREVERSE
-    return M1DIR == DIRREVERSE and M2DIR == DIRREVERSE
+    global RIGHTDIR, LEFTDIR, DIRREVERSE
+    return RIGHTDIR == DIRREVERSE and LEFTDIR == DIRREVERSE
 
 def is_forward():
-    global M1DIR, M2DIR, DIRFORWARD
-    return M1DIR == DIRFORWARD and M2DIR == DIRFORWARD
+    global RIGHTDIR, LEFTDIR, DIRFORWARD
+    return RIGHTDIR == DIRFORWARD and LEFTDIR == DIRFORWARD
+
+def is_turning():
+    global RIGHTSPEED, LEFTSPEED
+    return RIGHTSPEED != LEFTSPEED
 
 ########################################################
 # high level APIs
 ########################################################
 
 def accelerate(amount=1):
-    global M1SPEED, M2SPEED, M1DIR, M2DIR
+    global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     
     LOGGER.debug("accelerate({0})".format(amount))
     
-    M1SPEED = min(127, M1SPEED + amount)
-    M2SPEED = min(127, M2SPEED + amount)
+    RIGHTSPEED = min(127, RIGHTSPEED + amount)
+    LEFTSPEED = min(127, LEFTSPEED + amount)
     
     apply_speed_adjustment()
     return get_speed_and_direction()
@@ -322,12 +327,12 @@ def accelerate(amount=1):
 ########################################################
 
 def decelerate(amount=1):
-    global M1SPEED, M2SPEED, M1DIR, M2DIR
+    global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     
     LOGGER.debug("decelerate({0})".format(amount))
     
-    M1SPEED = max(0, M1SPEED - amount)
-    M2SPEED = max(0, M2SPEED - amount)
+    RIGHTSPEED = max(0, RIGHTSPEED - amount)
+    LEFTSPEED = max(0, LEFTSPEED - amount)
         
     apply_speed_adjustment()
     return get_speed_and_direction()
@@ -335,42 +340,48 @@ def decelerate(amount=1):
 ########################################################
 
 def forward(amount=5):
-    global M1SPEED, M2SPEED, M1DIR, M2DIR
+    global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     LOGGER.debug("forward")
         
-    if is_forward():
-        accelerate(amount)
-    else:
+    if is_forward() == False:
         stop()
-        forward_right(max(M1SPEED, M2SPEED))
-        forward_left (max(M1SPEED, M2SPEED))
-        accelerate()    
+   
+    can_accelerate = is_turning() == False
+    
+    forward_right(max(RIGHTSPEED, LEFTSPEED))
+    forward_left (max(RIGHTSPEED, LEFTSPEED))
+    
+    if can_accelerate == True:
+        accelerate(amount)
     
     return get_speed_and_direction()
 
 ########################################################
 
 def reverse(amount=5):
-    global M1SPEED, M2SPEED, M1DIR, M2DIR
+    global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     LOGGER.debug("reverse")
     
-    if is_reverse():
-        accelerate(amount)
-    else:
+    if is_reverse() == False:
         stop()
-        reverse_right(max(M1SPEED, M2SPEED))
-        reverse_left (max(M1SPEED, M2SPEED))
+    
+    can_accelerate = is_turning() == False
+    reverse_right(max(RIGHTSPEED, LEFTSPEED))
+    reverse_left (max(RIGHTSPEED, LEFTSPEED))
+    
+    if can_accelerate == True:
+        accelerate(amount)
     
     return get_speed_and_direction()
 
 ########################################################
 
 def stop(deceleration=50):
-    global M1SPEED, M2SPEED
+    global RIGHTSPEED, LEFTSPEED
     
     LOGGER.debug("stop({0})".format(deceleration))
     
-    while M1SPEED > 0 or M2SPEED > 0:
+    while RIGHTSPEED > 0 or LEFTSPEED > 0:
         decelerate(deceleration)
         time.sleep(0.5)
     
@@ -379,11 +390,11 @@ def stop(deceleration=50):
 ########################################################
 
 def spin(clockwise=True):
-    global M1SPEED, M2SPEED
+    global RIGHTSPEED, LEFTSPEED
     
     LOGGER.debug("spin({0})".format(clockwise))
     
-    spin_speed = max(M1SPEED, M2SPEED)
+    spin_speed = max(RIGHTSPEED, LEFTSPEED)
     
     if is_spinning() == False:
         stop()
@@ -400,15 +411,43 @@ def spin(clockwise=True):
 ########################################################
 
 def turn_left(sharpness=3):
-    global M1SPEED, M2SPEED
-    LOGGER.debug("turn_left({0})".format(sharpness))    
-    forward_left (max(0, M1SPEED/sharpness))
+    global RIGHTSPEED, LEFTSPEED
+    LOGGER.debug("turn_left({0})".format(sharpness))
+    
+    if is_forward():
+        func = forward_left
+        straighten_func = forward
+    else:
+        func = reverse_left
+        straighten_func = reverse
+    
+    if RIGHTSPEED == LEFTSPEED:
+        func(max(0, RIGHTSPEED/sharpness))
+    elif RIGHTSPEED < LEFTSPEED:
+        straighten_func()
+        time.sleep(0.3)
+        func(max(0, RIGHTSPEED/sharpness))    
+    
     return get_speed_and_direction()
 
 ########################################################
 
 def turn_right(sharpness=3):
     LOGGER.debug("turn_right({0}))".format(sharpness))
-    forward_right(max(0, M2SPEED/sharpness))
+    
+    if is_forward():
+        func = forward_right
+        straighten_func = forward
+    else:
+        func = reverse_right
+        straighten_func = reverse
+        
+    if RIGHTSPEED == LEFTSPEED:
+        func(max(0, LEFTSPEED/sharpness))
+    elif LEFTSPEED < RIGHTSPEED:
+        straighten_func()
+        time.sleep(0.3)
+        func(max(0, LEFTSPEED/sharpness))
+        
     return get_speed_and_direction()
     

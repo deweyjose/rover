@@ -28,23 +28,23 @@ def drive():
 
 @app.route('/accelerate')
 def accelerate():    
-    return jsonify(result=motorctrl.accelerate(5).asJSON());
+    return jsonify(result=motorctrl.accelerate(15).asJSON());
     
 @app.route('/decelerate')
 def decelerate():    
-    return jsonify(result=motorctrl.decelerate(5).asJSON());
+    return jsonify(result=motorctrl.decelerate(15).asJSON());
 
 @app.route('/forward')
 def forward():    
-    return jsonify(result=motorctrl.forward().asJSON());
+    return jsonify(result=motorctrl.forward(15).asJSON());
 
 @app.route('/reverse')
 def reverse():    
-    return jsonify(result=motorctrl.reverse().asJSON());
+    return jsonify(result=motorctrl.reverse(15).asJSON());
 
 @app.route('/stop')
 def stop():    
-    return jsonify(result=motorctrl.stop().asJSON());
+    return jsonify(result=motorctrl.stop(127).asJSON());
 
 @app.route('/right')
 def right():    
