@@ -5,13 +5,15 @@ import roboclaw
 ADDRESS    = 0x80
 DEVICE     = '/dev/ttyAMA0'
 BAUD_RATE  = 115200
-LOGGER     = loggers.get_logger(__file__, loggers.get_debug_level())
+LOGGER     = loggers.get_logger(__file__, loggers.get_default_level())
 DIRFORWARD = "F"
 DIRREVERSE = "R"
 RIGHTDIR   = DIRFORWARD
 LEFTDIR    = DIRFORWARD
 RIGHTSPEED = 0
 LEFTSPEED  = 0
+MAX_SPEED  = 127
+MIN_SPEED  = 0
 
 ########################################################
 
@@ -215,7 +217,7 @@ def get_temp():
 def reverse_right(speed):
     global RIGHTSPEED, RIGHTDIR
     
-    RIGHTSPEED = max(0, min(127, speed))
+    RIGHTSPEED = max(MIN_SPEED, min(MAX_SPEED, speed))
     RIGHTDIR   = DIRREVERSE
     
     LOGGER.debug("reverse_right({0})".format(RIGHTSPEED))
@@ -231,7 +233,7 @@ def reverse_right(speed):
 def reverse_left(speed):
     global LEFTSPEED, LEFTDIR
         
-    LEFTSPEED = max(0, min(127, speed))
+    LEFTSPEED = max(MIN_SPEED, min(MAX_SPEED, speed))
     LEFTDIR   = DIRREVERSE
     
     LOGGER.debug("reverse_left({0})".format(LEFTSPEED))
@@ -247,7 +249,7 @@ def reverse_left(speed):
 def forward_right(speed):
     global RIGHTSPEED, RIGHTDIR
     
-    RIGHTSPEED = max(0, min(127, speed))
+    RIGHTSPEED = max(MIN_SPEED, min(MAX_SPEED, speed))
     RIGHTDIR   = DIRFORWARD
     
     LOGGER.debug("forward_right({0})".format(RIGHTSPEED))
@@ -263,7 +265,7 @@ def forward_right(speed):
 def forward_left(speed):
     global LEFTSPEED, LEFTDIR
     
-    LEFTSPEED = max(0, min(127, speed))
+    LEFTSPEED = max(MIN_SPEED, min(MAX_SPEED, speed))
     LEFTDIR   = DIRFORWARD
     
     LOGGER.debug("forward_left({0})".format(LEFTSPEED))
@@ -313,33 +315,33 @@ def is_turning():
 # high level APIs
 ########################################################
 
-def accelerate(amount=1):
+def accelerate(amount=5):
     global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     
     LOGGER.debug("accelerate({0})".format(amount))
     
-    RIGHTSPEED = min(127, RIGHTSPEED + amount)
-    LEFTSPEED = min(127, LEFTSPEED + amount)
+    RIGHTSPEED = min(MAX_SPEED, RIGHTSPEED + amount)
+    LEFTSPEED = min(MAX_SPEED, LEFTSPEED + amount)
     
     apply_speed_adjustment()
     return get_speed_and_direction()
 
 ########################################################
 
-def decelerate(amount=1):
+def decelerate(amount=5):
     global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     
     LOGGER.debug("decelerate({0})".format(amount))
     
-    RIGHTSPEED = max(0, RIGHTSPEED - amount)
-    LEFTSPEED = max(0, LEFTSPEED - amount)
+    RIGHTSPEED = max(MIN_SPEED, RIGHTSPEED - amount)
+    LEFTSPEED = max(MIN_SPEED, LEFTSPEED - amount)
         
     apply_speed_adjustment()
     return get_speed_and_direction()
 
 ########################################################
 
-def forward(amount=5):
+def forward(amount=10):
     global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     LOGGER.debug("forward")
         
@@ -358,7 +360,7 @@ def forward(amount=5):
 
 ########################################################
 
-def reverse(amount=5):
+def reverse(amount=10):
     global RIGHTSPEED, LEFTSPEED, RIGHTDIR, LEFTDIR
     LOGGER.debug("reverse")
     
@@ -381,11 +383,15 @@ def stop(deceleration=50):
     
     LOGGER.debug("stop({0})".format(deceleration))
     
-    while RIGHTSPEED > 0 or LEFTSPEED > 0:
+    while RIGHTSPEED > MIN_SPEED or LEFTSPEED > MIN_SPEED:
         decelerate(deceleration)
         time.sleep(0.5)
     
     return get_speed_and_direction()
+
+def stop_forward(deceleration=50):
+    if is_forward():
+        stop(MAX_SPEED)
 
 ########################################################
 
@@ -410,44 +416,46 @@ def spin(clockwise=True):
 
 ########################################################
 
-def turn_left(sharpness=3):
+def turn(sharpness,
+         speed1, speed2,
+         forward_turn_func,
+         forward_turn_faster_func,
+         forward_straighten_func,
+         reverse_turn_func,
+         reverse_turn_faster_func,
+         reverse_straighten_func
+         ):
     global RIGHTSPEED, LEFTSPEED
-    LOGGER.debug("turn_left({0})".format(sharpness))
+    LOGGER.debug("turn({0})".format(sharpness))
     
     if is_forward():
-        func = forward_left
-        straighten_func = forward
+        turn_func        = forward_turn_func
+        turn_faster_func = forward_turn_faster_func
+        straighten_func  = forward_straighten_func
     else:
-        func = reverse_left
-        straighten_func = reverse
+        turn_func        = reverse_turn_func
+        turn_faster_func = reverse_turn_faster_func
+        straighten_func  = reverse_straighten_func
     
-    if RIGHTSPEED == LEFTSPEED:
-        func(max(0, RIGHTSPEED/sharpness))
-    elif RIGHTSPEED < LEFTSPEED:
+    if speed1 == speed2:
+        turn_func(max(MIN_SPEED, speed1/sharpness))
+    elif speed1 < speed2:
         straighten_func()
         time.sleep(0.3)
-        func(max(0, RIGHTSPEED/sharpness))    
+        turn_func(max(MIN_SPEED, speed1/sharpness))
+    else:
+        turn_faster_func(min(MAX_SPEED, int(speed1*1.3)))        
     
     return get_speed_and_direction()
 
 ########################################################
 
+def turn_left(sharpness=3):
+    return turn(sharpness, RIGHTSPEED, LEFTSPEED, forward_left, forward_right, forward, reverse_left, reverse_right, reverse)    
+
+########################################################
+
 def turn_right(sharpness=3):
-    LOGGER.debug("turn_right({0}))".format(sharpness))
-    
-    if is_forward():
-        func = forward_right
-        straighten_func = forward
-    else:
-        func = reverse_right
-        straighten_func = reverse
-        
-    if RIGHTSPEED == LEFTSPEED:
-        func(max(0, LEFTSPEED/sharpness))
-    elif LEFTSPEED < RIGHTSPEED:
-        straighten_func()
-        time.sleep(0.3)
-        func(max(0, LEFTSPEED/sharpness))
-        
-    return get_speed_and_direction()
+    return turn(sharpness, LEFTSPEED, RIGHTSPEED, forward_right, forward_left, forward, reverse_right, reverse_left, reverse)    
+
     

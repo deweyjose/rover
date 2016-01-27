@@ -1,62 +1,55 @@
-import diagnostics
-import motorctrl
+from settings import rconn
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-motorctrl.startup()
+def publish(command):
+    rconn.publish('rover', command)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-@app.route('/joystick')
-def joystick():
-    return render_template('joystick.html')
-
-@app.route('/diagnostics')
-def diagnosticsx():
-    return render_template('diagnostics.html', attributes=diagnostics.get_info_dictionary())
-
-@app.route('/logs')
-def logs():
-    return render_template('logs.html')
-
-@app.route('/drive')
-def drive():
     return render_template('drive.html')
 
 @app.route('/accelerate')
-def accelerate():    
-    return jsonify(result=motorctrl.accelerate(15).asJSON());
+def accelerate():
+    publish("accelerate")
+    return jsonify(result='ok');
     
 @app.route('/decelerate')
 def decelerate():    
-    return jsonify(result=motorctrl.decelerate(15).asJSON());
+    publish("decelerate")
+    return jsonify(result='ok');
 
 @app.route('/forward')
 def forward():    
-    return jsonify(result=motorctrl.forward(15).asJSON());
+    publish('forward')
+    return jsonify(result='ok');
 
 @app.route('/reverse')
 def reverse():    
-    return jsonify(result=motorctrl.reverse(15).asJSON());
+    publish('reverse')
+    return jsonify(result='ok');
 
 @app.route('/stop')
 def stop():    
-    return jsonify(result=motorctrl.stop(127).asJSON());
+    publish('stop')
+    return jsonify(result='ok');
 
 @app.route('/right')
 def right():    
-    return jsonify(result=motorctrl.turn_right().asJSON());
+    publish('right')
+    return jsonify(result='ok');
 
 @app.route('/left')
 def left():    
-    return jsonify(result=motorctrl.turn_left().asJSON());
+    publish('left')
+    return jsonify(result='ok');
 
 @app.route('/spin')
 def spin():    
-    return jsonify(result=motorctrl.spin().asJSON());
+    publish('spin')
+    return jsonify(result='ok');
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int("8888"))
+    

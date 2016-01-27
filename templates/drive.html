@@ -18,18 +18,16 @@
     <title>Drive!</title>
 </head>
 
-<body>
-    <h1>Drive Me!</h1>
+<body>    
     <table border=1 class="control">
         <tr><td></td><td><a href=# id=forward>FORWARD</a></td><td></td></tr>
         <tr><td></td><td></td><td></td></tr>
         <tr><td><a href=# id=left>LEFT</a></td><td><a href=# id=stop>STOP</a></td><td><a href=# id=right>RIGHT</a></td></tr>
         <tr><td></td><td></td><td></td></tr>
         <tr><td></td><td><a href=# id=reverse>REVERSE</a></td><td></td></tr>
-        <tr><td></td><td></td><td></td></tr>
-        <tr><td></td><td><a href=# id=spin>SPIN</a></td><td></td></tr> 
+        <tr><td></td><td><a href=# id=spin>SPIN</a></td><td></td></tr>         
     </table>
-    <span id=result style="font-size:xx-small;">stopped</span>
+    <span id=result style="font-size:xx-small;"></span>
 
     <script type="text/javascript">
 
@@ -44,14 +42,14 @@
         });
     }
 
-    create_api_click('accelerate');
-    create_api_click('decelerate');
     create_api_click('forward');
     create_api_click('reverse');
     create_api_click('stop');
     create_api_click('right');
     create_api_click('left');
-    create_api_click('spin');    
+    create_api_click('spin');
+    create_api_click('enable_crash_avoid');
+    create_api_click('disable_crash_avoid');
 
     });
     </script>

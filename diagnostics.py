@@ -1,7 +1,7 @@
 import motorctrl
 import loggers
 
-LOGGER = loggers.get_logger(__file__, loggers.get_debug_level())
+LOGGER = loggers.get_logger(__file__, loggers.get_default_level())
 
 def print_info_dictionary():
     LOGGER.info("{0}".format(get_info_dictionary()))

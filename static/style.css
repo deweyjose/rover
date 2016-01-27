@@ -16,8 +16,8 @@ a {
 }
 
 .control {
-    width: 315px;
-    height: 380px;
+    width: 100%;
+    height: 480px;
     table-layout:fixed;
 }
 .control td {
