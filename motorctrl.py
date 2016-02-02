@@ -393,6 +393,10 @@ def stop_forward(deceleration=50):
     if is_forward():
         stop(MAX_SPEED)
 
+def stop_reverse(deceleration=50):
+    if is_reverse():
+        stop(MAX_SPEED)
+
 ########################################################
 
 def spin(clockwise=True):
