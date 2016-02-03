@@ -98,7 +98,9 @@ void monitor(struct monitorspec * spec) {
             if (distance < g_min_distance) {
                 spec->violations++;
                 if (spec->violations > g_filter_count) {                    
-                    fprintf(stderr, "%d violations. distance %lf, sending %s\n", spec->violations, distance, spec->command);
+                    if (rand() % 100 < 10) {
+                        fprintf(stderr, "%d violations. distance %lf, sending %s\n", spec->violations, distance, spec->command);
+                    }
                     char buffer[30];
                     sprintf(buffer, "PUBLISH rover %s", spec->command);
                     redisCommand(g_context, buffer);
@@ -188,7 +190,7 @@ int main(int argc, char** argv) {
     int    redis_port     = atoi(argv[2]);
            g_min_distance = atof(argv[3]);
            g_filter_count = atoi(argv[4]);
-    int    reading_delay  = atoi(argv[5]);
+    int    reading_delay  = atoi(argv[5])/2;
       
     printf("%s:%d, min %lf, filter %d, delay %d\n", redis_server, redis_port, g_min_distance, g_filter_count, reading_delay);
     
@@ -208,9 +210,8 @@ int main(int argc, char** argv) {
     if (!initialize_monitorspec(&g_rear , TRIGGER_REAR , ECHO_REAR )) { return (EXIT_FAILURE); }
     
     while(true) { 
-        trigger(&g_front); 
-        trigger(&g_rear); 
-        delay(reading_delay);
+        trigger(&g_front); delay(reading_delay);
+        trigger(&g_rear ); delay(reading_delay);
     }
     
     return (EXIT_SUCCESS);
