@@ -30,8 +30,9 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" 127.0.0.1 </runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" 127.0.0.1 6379 5 0 5 25</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" 127.0.0.1 6379 5 5 25</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" 127.0.0.1 6379 5 5 25 4 5 stop_front</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" 127.0.0.1 6379 5 5 25</runcommand>
+        <runcommand>"${OUTPUT_PATH}" 127.0.0.1 6379 5 5 25 4 5 stop_front</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
