@@ -1,11 +1,11 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          crashavoid
+# Provides:          crashrear
 # Required-Start:    $local_fs $network $named $time $syslog
 # Required-Stop:     $local_fs $network $named $time $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Description:       rover crash avoidance
+# Description:       rover rear crash avoidance
 ### END INIT INFO
 
 REDIS_SERVER=127.0.0.1
@@ -13,11 +13,14 @@ REDIS_PORT=6379
 DISTANCE=20
 ERROR_COUNT=1
 DELAY=30
+TRIGGER=7
+ECHO=6
+DIRECTION=reverse
 SCRIPT=/root/rover/sensors/dist/Debug/GNU-Linux/sensors
 RUNAS=root
 
-PIDFILE=/var/run/crashavoid.pid
-LOGFILE=/var/log/crashavoid.log
+PIDFILE=/var/run/crashrear.pid
+LOGFILE=/var/log/crashrear.log
 
 start() {
   if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
@@ -25,7 +28,7 @@ start() {
     return 1
   fi
   echo 'Starting service…' >&2
-  local CMD="$SCRIPT $REDIS_SERVER $REDIS_PORT $DISTANCE $ERROR_COUNT $DELAY &> \"$LOGFILE\" & echo \$!"
+  local CMD="$SCRIPT $REDIS_SERVER $REDIS_PORT $DISTANCE $ERROR_COUNT $DELAY $TRIGGER $ECHO $DIRECTION &> \"$LOGFILE\" & echo \$!"
   su -c "$CMD" $RUNAS > "$PIDFILE"
   echo 'Service started' >&2
 }
