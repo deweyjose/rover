@@ -44,7 +44,14 @@
           <linkerAddLib>
             <pElem>/usr/local/lib/</pElem>
           </linkerAddLib>
-          <commandLine>-lwiringPi -lhiredis</commandLine>
+          <linkerDynSerch>
+            <pElem>/usr/local/lib/</pElem>
+          </linkerDynSerch>
+          <linkerLibItems>
+            <linkerLibLibItem>gsl</linkerLibLibItem>
+            <linkerLibLibItem>gslcblas</linkerLibLibItem>
+          </linkerLibItems>
+          <commandLine>-lhiredis -lwiringPi</commandLine>
         </linkerTool>
       </compileType>
       <item path="sonic.c" ex="false" tool="0" flavor2="0">

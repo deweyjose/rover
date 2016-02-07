@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          crashrear
 # Required-Start:    $local_fs $network $named $time $syslog
@@ -11,11 +11,11 @@
 REDIS_SERVER=127.0.0.1
 REDIS_PORT=6379
 DISTANCE=20
-ERROR_COUNT=1
-DELAY=30
+DELAY=100
 TRIGGER=7
 ECHO=6
-DIRECTION=reverse
+COMMAND=stop_reverse
+VARIANCE=10.5
 SCRIPT=/root/rover/sensors/dist/Debug/GNU-Linux/sensors
 RUNAS=root
 
@@ -28,7 +28,7 @@ start() {
     return 1
   fi
   echo 'Starting service…' >&2
-  local CMD="$SCRIPT $REDIS_SERVER $REDIS_PORT $DISTANCE $ERROR_COUNT $DELAY $TRIGGER $ECHO $DIRECTION &> \"$LOGFILE\" & echo \$!"
+  local CMD="$SCRIPT $REDIS_SERVER $REDIS_PORT $DISTANCE $DELAY $TRIGGER $ECHO $COMMAND $VARIANCE &> \"$LOGFILE\" & echo \$!"
   su -c "$CMD" $RUNAS > "$PIDFILE"
   echo 'Service started' >&2
 }

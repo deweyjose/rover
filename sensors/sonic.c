@@ -21,27 +21,33 @@
 #include <pthread.h>
 #include <wiringPi.h>
 #include <hiredis.h>
+#include <stdio.h>
+#include <gsl/gsl_statistics.h>
 
 // =================================================
 
 #define SPEED_SOUND     17150
 #define BILLION         1E9
 #define TRIGGER_DELAY   10
+#define HISTORY_SIZE    10
+#define VARIANCE_LIMIT  5
 
 // =================================================
 
-int                 g_echo         = 0;
-int                 g_trigger      = 0;
-int                 g_violations   = 0;
-int                 g_filter_count = 0;
-double              g_min_distance = 0.0;
-bool                g_up           = false;
-char                g_direction[30];
+int                 g_echo          = 0;
+int                 g_trigger       = 0;
+double              g_min_distance  = 0.0;
+double              g_variance_limit= 10.0;
 char                g_command[30];
+
 struct timespec     g_start;
 struct timespec     g_stop;
-pthread_mutex_t     g_lock;
-redisContext *      g_context      = NULL;
+
+double              g_history[HISTORY_SIZE];
+int                 g_index         = 0;
+int                 g_readings      = 0;
+
+redisContext *      g_context       = NULL;
 
 // =================================================
 
@@ -57,47 +63,67 @@ double calculate_distance(struct timespec * start, struct timespec * stop) {
     return (x / BILLION) * SPEED_SOUND;
 }
 
-bool valid_distance(double distance) {
-    return distance > 0 && distance < 1000;
-}
-
 // =================================================
 
-void trigger() {
-    digitalWrite(g_trigger, 1); 
-    delayMicroseconds(TRIGGER_DELAY);
-    digitalWrite(g_trigger, 0);
+int get_history_index() {
+    // if we're at the end restart at the beginning
+    if (g_index == HISTORY_SIZE-1) {
+        g_index = 0;        
+    }
+    return g_index++;
 }
 
-// =================================================
+void dump_statistics(const double data[], const int count) {
+    double mean, variance, largest, smallest;
+    
+    mean     = gsl_stats_mean(data, 1, count);
+    variance = gsl_stats_variance(data, 1, count);
+    largest  = gsl_stats_max(data, 1, count);
+    smallest = gsl_stats_min(data, 1, count);
+
+    printf("---------------------------------\n");
+    printf("The dataset is ");
+    int i = 0;
+    for (i; i < count; ++i) {
+        printf("%g ", data[i]);
+    }
+    printf("\n");
+    printf("The sample mean is %g\n", mean);
+    printf("The estimated variance is %g\n", variance);
+    printf("The largest value is %g\n", largest);
+    printf("The smallest value is %g\n", smallest);
+    printf("\n");
+}
 
 void monitor() {  
     if (digitalRead(g_echo) == 1) {
-        read_clock(&g_start);
-        g_up = true;
-    } else {
-        if (g_up) {
-            read_clock(&g_stop);
-            double distance = calculate_distance(&g_start, &g_stop);
-            if (valid_distance(distance)) {
-                if (distance < g_min_distance) {
-                    g_violations++;
-                    if (g_violations > g_filter_count) {
-                        if (rand() % 100 < 10) {
-                            fprintf(stderr, "%d violations. distance %lf, sending %s\n", g_violations, distance, g_command);
-                        }
-                        char buffer[30];
-                        sprintf(buffer, "PUBLISH rover %s", g_command);
-                        redisCommand(g_context, buffer);
-                        g_violations = 0;
-                    }
-                } else {
-                    g_violations = 0;
-                }
-            }
+        read_clock(&g_start);        
+    } else {        
+        read_clock(&g_stop);
+        
+        ++g_readings;
+        
+        double distance = calculate_distance(&g_start, &g_stop);
+                
+        g_history[get_history_index()] = distance;   
+        
+        int entries = g_readings >= HISTORY_SIZE ? HISTORY_SIZE-1 : g_index;
+        
+        double variance = gsl_stats_variance(g_history, 1, entries);
+        
+        if (rand() % 100 < 1) {
+            dump_statistics(g_history, entries);
         }
         
-        g_up = false;     
+        if (distance < g_min_distance) {                
+            if (variance >= g_variance_limit) {
+                fprintf(stderr, "ignoring distance violation for distance %lf, variance %lf > limit %lf\n", 
+                        distance, variance, g_variance_limit);            
+            } else {
+                fprintf(stderr, "distance %lf, sending %s\n", distance, g_command);            
+                redisCommand(g_context, g_command);                    
+            }
+        }        
     }    
 }
 
@@ -110,6 +136,14 @@ redisContext * rconnect(const char * server, const int port) {
         context = NULL;
     }
     return context;
+}
+
+// =================================================
+
+void trigger() {
+    digitalWrite(g_trigger, 1); 
+    delayMicroseconds(TRIGGER_DELAY);
+    digitalWrite(g_trigger, 0);
 }
 
 // =================================================
@@ -141,50 +175,31 @@ bool setup_wiring_pi() {
 
 // =================================================
 
-void usage() {
-    printf("usage:   sonic <redis ip> <redis port> <min> <max> <filter count> <reading delay>\n");
-    printf("example: sonic 127.0.0.1 6379 2.2 55.5 5 15\n");
-}
-
-// =================================================
-
-int main(int argc, char** argv) {        
-    if (argc != 9) {
-        usage();
-        return (EXIT_FAILURE);
-    }
+int main(int argc, char** argv) {            
+    char * redis_server     = argv[1];
+    int    redis_port       = atoi(argv[2]);
+           g_min_distance   = atof(argv[3]);           
+    int    trigger_delay    = atoi(argv[4]);
+           g_trigger        = atoi(argv[5]);
+           g_echo           = atoi(argv[6]); 
+    char * command          = argv[7];
+           g_variance_limit = atof(argv[8]);
     
-    char * redis_server   = argv[1];
-    int    redis_port     = atoi(argv[2]);
-           g_min_distance = atof(argv[3]);
-           g_filter_count = atoi(argv[4]);
-    int    reading_delay  = atoi(argv[5]);
-           g_trigger      = atoi(argv[6]);
-           g_echo         = atoi(argv[7]); 
-           g_up           = false;
-           
-           sprintf(g_direction, "%s", argv[8]);
-           sprintf(g_command, "stop_%s", g_direction);
-           
-    printf("%s:%d, min %lf, filter %d, delay %d, direction %s, trigger %d, echo %d\n", 
-            redis_server, redis_port, g_min_distance, g_filter_count, reading_delay, g_direction, g_trigger, g_echo);
+    sprintf(g_command, "PUBLISH rover %s", command);       
+                      
+    printf("%s:%d, min %lf, delay %d, command %s, trigger %d, echo %d, variance %lf\n", 
+            redis_server, redis_port, g_min_distance, trigger_delay, g_command, g_trigger, g_echo, g_variance_limit);
     
     g_context = rconnect(redis_server, redis_port);
     
-    if (!setup_wiring_pi()) {
-        return (EXIT_FAILURE);
-    }        
-    
-    if (pthread_mutex_init(&g_lock, NULL) != 0){
-        printf("mutex init failed\n");
-        return false;
-    }     
+    if (!setup_wiring_pi()) { 
+        return (EXIT_FAILURE); 
+    }
     
     while(true) { 
         trigger(); 
-        delay(reading_delay);       
+        delay(trigger_delay); 
     }
     
     return (EXIT_SUCCESS);
 }
-

@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/local/lib/
+LDLIBSOPTIONS=-L/usr/local/lib/ -Wl,-rpath,/usr/local/lib/ -lgsl -lgslcblas
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -60,7 +60,7 @@ LDLIBSOPTIONS=-L/usr/local/lib/
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sensors: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sensors ${OBJECTFILES} ${LDLIBSOPTIONS} -lwiringPi -lhiredis
+	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sensors ${OBJECTFILES} ${LDLIBSOPTIONS} -lhiredis -lwiringPi
 
 ${OBJECTDIR}/sonic.o: sonic.c 
 	${MKDIR} -p ${OBJECTDIR}

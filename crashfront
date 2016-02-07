@@ -11,14 +11,13 @@
 REDIS_SERVER=127.0.0.1
 REDIS_PORT=6379
 DISTANCE=20
-ERROR_COUNT=1
-DELAY=30
+DELAY=100
 TRIGGER=4
 ECHO=5
-DIRECTION=forward
+COMMAND=stop_forward
+VARIANCE=10.5
 SCRIPT=/root/rover/sensors/dist/Debug/GNU-Linux/sensors
 RUNAS=root
-
 PIDFILE=/var/run/crashfront.pid
 LOGFILE=/var/log/crashfront.log
 
@@ -28,7 +27,7 @@ start() {
     return 1
   fi
   echo 'Starting service…' >&2
-  local CMD="$SCRIPT $REDIS_SERVER $REDIS_PORT $DISTANCE $ERROR_COUNT $DELAY $TRIGGER $ECHO $DIRECTION &> \"$LOGFILE\" & echo \$!"
+  local CMD="$SCRIPT $REDIS_SERVER $REDIS_PORT $DISTANCE $DELAY $TRIGGER $ECHO $COMMAND $VARIANCE &> \"$LOGFILE\" & echo \$!"
   su -c "$CMD" $RUNAS > "$PIDFILE"
   echo 'Service started' >&2
 }
