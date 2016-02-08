@@ -12,6 +12,8 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
+#include <syslog.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
@@ -34,6 +36,7 @@
 
 // =================================================
 
+bool                g_use_syslog    = true;
 int                 g_echo          = 0;
 int                 g_trigger       = 0;
 double              g_min_distance  = 0.0;
@@ -53,7 +56,7 @@ redisContext *      g_context       = NULL;
 
 void read_clock(struct timespec * ts) {
     if (clock_gettime(CLOCK_REALTIME, ts) == -1) {
-        fprintf(stderr, "Unable to get realtime clock: %s\n", strerror (errno)) ;
+        syslog(LOG_ERR, "Unable to get realtime clock: %s", strerror(errno)) ;
         exit(EXIT_FAILURE);
     }
 }
@@ -73,26 +76,11 @@ int get_history_index() {
     return g_index++;
 }
 
-void dump_statistics(const double data[], const int count) {
-    double mean, variance, largest, smallest;
-    
-    mean     = gsl_stats_mean(data, 1, count);
-    variance = gsl_stats_variance(data, 1, count);
-    largest  = gsl_stats_max(data, 1, count);
-    smallest = gsl_stats_min(data, 1, count);
-
-    printf("---------------------------------\n");
-    printf("The dataset is ");
-    int i = 0;
-    for (i; i < count; ++i) {
-        printf("%g ", data[i]);
-    }
-    printf("\n");
-    printf("The sample mean is %g\n", mean);
-    printf("The estimated variance is %g\n", variance);
-    printf("The largest value is %g\n", largest);
-    printf("The smallest value is %g\n", smallest);
-    printf("\n");
+void dump_statistics(const int count) {
+    syslog(LOG_INFO, "The sample mean is %g"        , gsl_stats_mean    (g_history, 1, count));
+    syslog(LOG_INFO, "The estimated variance is %g" , gsl_stats_variance(g_history, 1, count));
+    syslog(LOG_INFO, "The largest value is %g"      , gsl_stats_max     (g_history, 1, count));
+    syslog(LOG_INFO, "The smallest value is %g"     , gsl_stats_min     (g_history, 1, count));    
 }
 
 void monitor() {  
@@ -112,15 +100,14 @@ void monitor() {
         double variance = gsl_stats_variance(g_history, 1, entries);
         
         if (rand() % 100 < 1) {
-            dump_statistics(g_history, entries);
+            dump_statistics(entries);
         }
         
         if (distance < g_min_distance) {                
             if (variance >= g_variance_limit) {
-                fprintf(stderr, "ignoring distance violation for distance %lf, variance %lf > limit %lf\n", 
-                        distance, variance, g_variance_limit);            
+                syslog(LOG_WARNING, "ignoring distance %lf, variance %lf > limit %lf", distance, variance, g_variance_limit);            
             } else {
-                fprintf(stderr, "distance %lf, sending %s\n", distance, g_command);            
+                syslog(LOG_WARNING, "distance %lf, sending %s", distance, g_command);            
                 redisCommand(g_context, g_command);                    
             }
         }        
@@ -132,7 +119,7 @@ void monitor() {
 redisContext * rconnect(const char * server, const int port) {
     redisContext * context = redisConnect(server, port);
     if (context != NULL && context->err) {
-        printf("Error: %s\n", context->errstr);       
+        syslog(LOG_CRIT, "Error: %s", context->errstr);       
         context = NULL;
     }
     return context;
@@ -150,12 +137,12 @@ void trigger() {
 
 bool setup_wiring_pi() {
     if (wiringPiSetup () < 0) {
-        fprintf(stderr, "Unable to setup wiringPi: %s\n", strerror(errno));
+        syslog(LOG_CRIT, "Unable to setup wiringPi: %s", strerror(errno));
         return false;
     }
     
     if (wiringPiISR (g_echo, INT_EDGE_BOTH, &monitor) < 0) {
-        fprintf(stderr, "Unable to setup ISR: %s\n", strerror(errno));
+        syslog(LOG_CRIT, "Unable to setup ISR: %s", strerror(errno));
         return false;
     }
     
@@ -166,7 +153,7 @@ bool setup_wiring_pi() {
     delay(1000);   
     
     if (piHiPri(50) < 0) {
-        fprintf(stderr, "Unable to set priority to 50: %s\n", strerror(errno));
+        syslog(LOG_CRIT, "Unable to set priority to 50: %s", strerror(errno));
         return false;
     }    
     
@@ -186,8 +173,10 @@ int main(int argc, char** argv) {
            g_variance_limit = atof(argv[8]);
     
     sprintf(g_command, "PUBLISH rover %s", command);       
-                      
-    printf("%s:%d, min %lf, delay %d, command %s, trigger %d, echo %d, variance %lf\n", 
+    
+    openlog(NULL, LOG_CONS|LOG_PID, LOG_USER);
+    
+    syslog(LOG_INFO, "%s:%d, min %lf, delay %d, command %s, trigger %d, echo %d, variance %lf", 
             redis_server, redis_port, g_min_distance, trigger_delay, g_command, g_trigger, g_echo, g_variance_limit);
     
     g_context = rconnect(redis_server, redis_port);
