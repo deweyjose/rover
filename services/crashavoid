@@ -1,11 +1,11 @@
 #!/bin/sh
 ### BEGIN INIT INFO
-# Provides:          crashfront
+# Provides:          crashavoid
 # Required-Start:    $local_fs $network $named $time $syslog
 # Required-Stop:     $local_fs $network $named $time $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Description:       rover frontal crash avoidance
+# Description:       rover crash avoidance
 ### END INIT INFO
 
 REDIS_SERVER=127.0.0.1
@@ -14,12 +14,12 @@ DISTANCE=20
 DELAY=100
 TRIGGER=4
 ECHO=5
-COMMAND=stop_forward
+COMMAND=stop_"$2"
 VARIANCE=10.5
-SCRIPT=/root/rover/sensors/dist/Debug/GNU-Linux/sensors
+SCRIPT=/root/rover/bin/sonic
 RUNAS=root
-PIDFILE=/var/run/crashfront.pid
-LOGFILE=/var/log/crashfront.log
+PIDFILE=/var/run/crash"$2".pid
+LOGFILE=/var/log/crash"$2".log
 
 start() {
   if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
@@ -50,7 +50,7 @@ uninstall() {
     stop
     rm -f "$PIDFILE"
     echo "Notice: log file is not be removed: '$LOGFILE'" >&2
-    update-rc.d -f <NAME> remove
+    update-rc.d -f crashavoid remove
     rm -fv "$0"
   fi
 }

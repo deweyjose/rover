@@ -8,7 +8,7 @@
 # Description:       executes drive commands
 ### END INIT INFO
 
-SCRIPT=/root/rover/control.py
+SCRIPT=/root/rover/bin/control.py
 RUNAS=root
 
 PIDFILE=/var/run/drivecontrol.pid
@@ -43,7 +43,7 @@ uninstall() {
     stop
     rm -f "$PIDFILE"
     echo "Notice: log file is not be removed: '$LOGFILE'" >&2
-    update-rc.d -f <NAME> remove
+    update-rc.d -f drivecontrol remove
     rm -fv "$0"
   fi
 }
