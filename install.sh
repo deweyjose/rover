@@ -1,10 +1,14 @@
 #!/bin/sh
 
-# Pytyon
+# Python
 echo installing Python scripts into bin
 cp -u python/*.py bin/
 cp -ur python/templates bin/
 cp -ur python/static bin/
+
+# Crash Avoid
+echo installing crashavoid into bin
+cp crashavoid/dist/Release/GNU-Linux/crashavoid bin/
 
 # Drive Control Service
 echo installing Drive Control Service
@@ -21,3 +25,11 @@ chmod +x /etc/init.d/drivecontrolui
 chown root:root /etc/init.d/drivecontrolui
 #update-rc.d drivecontrolui defaults
 #update-rc.d drivecontrolui enable
+
+# Crash Avoid Service
+echo installing Crash Avoid Service
+cp -u services/crashavoid /etc/init.d/crashavoid
+chmod +x /etc/init.d/crashavoid
+chown root:root /etc/init.d/crashavoid
+#update-rc.d crashavoid defaults
+#update-rc.d crashavoid enable

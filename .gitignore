@@ -1,3 +1,9 @@
 /sensors/build/
 /sensors/dist/
 /bin/
+/crashavoid/build/
+/crashavoid/dist/
+/servoctrl/build/
+/servoctrl/dist/
+/facefinder/build/
+/facefinder/dist/
