@@ -13,6 +13,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -25,8 +27,15 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /rover/facefinder/</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /rover/facefinder/haarcascades/</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 /root/rover/facefinder/</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 /root/rover/facefinder/face-rec-model.txt</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/facefinder/face-rec-model.txt</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/facefinder/face-rec-model.txt learn</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/bin/face-rec-model.txt learn</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/bin/face-rec-model.txt learn</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
@@ -58,8 +67,14 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /rover/facefinder/</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /rover/facefinder/haarcascades/</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 /root/rover/facefinder/</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 /root/rover/facefinder/face-rec-model.txt</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/facefinder/face-rec-model.txt</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/facefinder/face-rec-model.txt learn</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" /root/rover/facefinder/haarcascades/haarcascade_frontalface_alt.xml 400 400 3 /root/rover/facefinder/face-rec-model.txt learn</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

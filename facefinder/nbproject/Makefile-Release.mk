@@ -60,7 +60,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/facefinder: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/facefinder ${OBJECTFILES} ${LDLIBSOPTIONS} -lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_highgui -lopencv_objdetect
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/facefinder ${OBJECTFILES} ${LDLIBSOPTIONS} -lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_objdetect -lopencv_highgui -lopencv_face -lopencv_imgcodecs
 
 ${OBJECTDIR}/facefinder.o: facefinder.cpp 
 	${MKDIR} -p ${OBJECTDIR}

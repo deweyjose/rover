@@ -43,7 +43,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <commandLine>-lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_highgui -lopencv_objdetect</commandLine>
+          <commandLine>-lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_objdetect -lopencv_highgui -lopencv_face -lopencv_imgcodecs</commandLine>
         </linkerTool>
       </compileType>
       <item path="facefinder.cpp" ex="false" tool="1" flavor2="0">
@@ -74,7 +74,7 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <commandLine>-lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_highgui -lopencv_objdetect</commandLine>
+          <commandLine>-lopencv_core -lopencv_videoio -lopencv_imgproc -lopencv_objdetect -lopencv_highgui -lopencv_face -lopencv_imgcodecs</commandLine>
         </linkerTool>
       </compileType>
       <item path="facefinder.cpp" ex="false" tool="1" flavor2="0">
