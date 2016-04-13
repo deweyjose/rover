@@ -46,8 +46,9 @@ int main (int argc, char * argv[]) {
     int min = atoi(argv[1]);
     int max = atoi(argv[2]);
     int dly = atoi(argv[3]);
+    int cnt = atoi(argv[4]);
     int x = 0;
-    for (; x < 2; x++) {
+    for (; x < cnt; x++) {
       int i = min;
       for (; i < max; i++) {
 	printf("%d\n", i);

@@ -78,7 +78,7 @@ int main(int argc, char * argv[]) {
     
     if (mode.compare("learn") == 0) {        
         learn(capture, classifier, model, model_path);         
-    } else if (mode.compare("detect")) {
+    } else if (mode.compare("detect") == 0) {
         detect(capture, classifier, model);     
     } else if (mode.compare("")) {
         
@@ -92,9 +92,7 @@ void detect(Ptr<VideoCapture> capture, Ptr<CascadeClassifier> classifier, Ptr<Fa
         std::vector<Mat> faces;
         extract_faces(capture, classifier, faces);
 
-        if (faces.empty()) {
-            cout << "no face was detected..\n";
-        } else {
+        if (!faces.empty()) {
             for (size_t i = 0; i < faces.size(); i++) {                       
                 int label = -1;
                 double confidence = -1;
@@ -174,9 +172,7 @@ void learn(Ptr<VideoCapture> capture, Ptr<CascadeClassifier> classifier, Ptr<Fac
         std::vector<Mat> faces;
         filter_faces(capture, classifier, faces);
         
-        if (faces.empty()) {
-            cout << "no face was detected...\n";            
-        } else {        
+        if (!faces.empty()) {            
             std::vector<int> labels;
             for(int x = 0; x < faces.size(); ++x) {                
                 labels.push_back(label);
