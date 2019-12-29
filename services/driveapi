@@ -8,7 +8,7 @@
 # Description:       drive api
 ### END INIT INFO
 
-SCRIPT=~/pi/rover/api/api.py
+SCRIPT=/home/pi/rover/api/api.py
 RUNAS=root
 
 PIDFILE=/var/run/driveapi.pid
@@ -40,10 +40,12 @@ install() {
   local SURE
   read SURE
   if [ "$SURE" = "yes" ]; then
-    echo installing Drive Control UI Service
+    echo Installing service
     cp -u services/driveapi /etc/init.d/driveapi
     chmod +x /etc/init.d/driveapi
     chown root:root /etc/init.d/driveapi
+    update-rc.d driveapi defaults
+    update-rc.d driveapi enable
   fi
 }
 

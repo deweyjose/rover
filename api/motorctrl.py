@@ -22,6 +22,18 @@ def startup():
     LOGGER.debug("roboclaw.Open({0}, {1})".format(DEVICE, BAUD_RATE))    
     roboclaw.Open(DEVICE, BAUD_RATE)
     set_voltage_settings(voltage_settings(0))
+    version = get_version()
+    if version.ok == False:
+        LOGGER.error("failed to get version at startup")
+        return false
+    
+    LOGGER.info("Version "+version.version)
+    
+    apival = roboclaw.ForwardM1(ADDRESS, 0)
+    LOGGER.info("stopping M1: {0}".format(apival))
+    apival = roboclaw.ForwardM2(ADDRESS, 0)
+    LOGGER.info("stopping M2: {0}".format(apival))
+
     return True
 
 ########################################################

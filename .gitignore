@@ -1,5 +1,6 @@
 *.pyc
 .idea/
+*swp
 /sensors/build/
 /sensors/dist/
 /bin/
