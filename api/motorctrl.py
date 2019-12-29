@@ -462,4 +462,75 @@ def turn_left(sharpness=3):
 def turn_right(sharpness=3):
     return turn(sharpness, LEFTSPEED, RIGHTSPEED, forward_right, forward_left, forward, reverse_right, reverse_left, reverse)    
 
+########################################################
+
+def get_diagnostics_info():
+    version     = get_version()
+    voltage     = get_voltage_settings()
+    current     = get_max_current_settings()
+    temperature = get_temp()
+    errors      = get_errors()
+    config      = get_configuration()
+    speed       = get_speed_and_direction()
     
+    info = [{'name':'version'          , 'value': version.version       },
+            {'name':'main max voltage' , 'value': voltage.main_max      },
+            {'name':'main min voltage' , 'value': voltage.main_min      },
+            {'name':'logic max voltage', 'value': voltage.logic_max     },
+            {'name':'logic min voltage', 'value': voltage.logic_min     },
+            {'name':'max current right', 'value': current.right         },
+            {'name':'max current left' , 'value': current.left          },
+            {'name':'temp fahrenheit'  , 'value': temperature.fahrenheit},
+            {'name':'temp celsius'     , 'value': temperature.celsius   },
+            {'name':'errors'           , 'value': errors.values()       },
+            {'name':'right speed'      , 'value': speed.speed_right     },
+            {'name':'right direction'  , 'value': speed.direction_right },
+            {'name':'left speed'       , 'value': speed.speed_left      },
+            {'name':'left direction'   , 'value': speed.direction_left  }]
+    
+    for key in config:
+        info.append({'name': config.get(key), 'value': key})
+    
+    return info
+
+#######################################################
+
+CMD_MAPPING = {'forward'     : forward,
+               'f'           : forward,
+               'reverse'     : reverse,
+               'b'           : reverse,
+               'left'        : turn_left,
+               'l'           : turn_left,
+               'right'       : turn_right,
+               'r'           : turn_right,
+               'spin'        : spin,
+               's'           : spin,
+               'stop'        : stop,
+               'x'           : stop,
+               'stop_forward': stop_forward,
+               'stop_reverse': stop_reverse,
+               'accelerate'  : accelerate,
+               'a'           : accelerate,
+               'decelerate'  : decelerate,
+               'd'           : decelerate,
+               'diagnostics' : get_diagnostics_info,
+               'z'           : get_diagnostics_info}
+
+def execute_command(cmd):
+    if cmd == 'help' or cmd == 'h':
+        LOGGER.info("FUNCTIONS: %s" % ' '.join(CMD_MAPPING.keys()))
+    elif cmd == 'quit' or cmd == 'q':
+        LOGGER.info("good bye!")
+        return False
+    else:
+        func_info = CMD_MAPPING.get(cmd)
+
+        if func_info == None:
+            LOGGER.error("Unknown command %s" % cmd)
+        else:
+            func = func_info
+            if func != None:
+                func()
+
+    return True
+

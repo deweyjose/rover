@@ -2,7 +2,7 @@ import sys
 import logging
 
 def get_default_level():
-    return get_debug_level()
+    return get_info_level()
 
 def get_debug_level():
     return logging.DEBUG

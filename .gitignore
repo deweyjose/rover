@@ -1,3 +1,4 @@
+*.pyc
 /sensors/build/
 /sensors/dist/
 /bin/
